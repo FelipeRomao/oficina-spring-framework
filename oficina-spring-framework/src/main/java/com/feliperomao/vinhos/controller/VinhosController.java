@@ -5,6 +5,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +24,14 @@ public class VinhosController {
 	@Autowired
 	private Vinhos vinhos;
 
+	@GetMapping
+	public ModelAndView listar() {
+		ModelAndView mv = new ModelAndView("vinhos/lista-vinhos");
+		mv.addObject("vinhos", vinhos.findAll());
+		
+		return mv;
+	}
+	
 	@GetMapping("/novo")
 	public ModelAndView novo(Vinho vinho) {
 		ModelAndView mv = new ModelAndView("vinhos/cadastro-vinho");
@@ -48,5 +57,13 @@ public class VinhosController {
 	public ModelAndView editar(@PathVariable Long id) {
 		return novo(this.vinhos.findOne(id));
 
+	}
+	
+	@DeleteMapping("/{id}")
+	public String excluir(@PathVariable Long id, RedirectAttributes attributes) {
+		vinhos.delete(id);
+		attributes.addFlashAttribute("mensagem", "Vinho excluido com sucesso");
+		
+		return "redirect:/vinhos";
 	}
 }
